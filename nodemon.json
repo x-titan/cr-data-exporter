@@ -1,0 +1,6 @@
+{
+  "watch": ["src/"],
+  "ext": "ts,json,ejs,js,cjs,tsx,jsx,mjs",
+  "ignore": ["dist/", "node_modules/", "build/", "bin/", "test/", "target/"],
+  "exec": "tsx src"
+}
