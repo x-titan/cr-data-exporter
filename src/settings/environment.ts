@@ -1,36 +1,44 @@
-import * as dotenv from "dotenv"
-import type { EnvironmentType, ProjectEnvironment } from "./types"
+import { configDotenv } from "dotenv"
+import type { EnvironmentType } from "./types"
 
-const baseConfig: dotenv.DotenvConfigOptions = {
-  override: true,
-  debug: false,
+export const environment = {} as Record<string, string | undefined>
+
+const options = {
   quiet: true,
-  encoding: "utf-8",
+  encoding: "utf8" as const,
 }
 
-const baseEnv = dotenv.config({ ...baseConfig, path: ".env" }).parsed ?? {}
-
-const currentEnv = (
-  baseEnv.ENV ??
-  baseEnv.NODE_ENV ??
-  baseEnv.DENO_ENV ??
-  baseEnv.BUN_ENV ??
-  "development"
-).toLowerCase()
-
-const specificEnv = dotenv.config({
-  ...baseConfig,
-  path: `.env.${currentEnv}`,
+configDotenv({
+  ...options,
+  path: ".env",
+  processEnv: environment,
 }).parsed ?? {}
 
-export const environment: ProjectEnvironment = {
-  isDevelopment: currentEnv === "development",
-  isTest: currentEnv === "test",
-  isProduction: currentEnv === "production",
-  debug: currentEnv === "development" || currentEnv === "test",
-  ...baseEnv,
-  ...specificEnv,
-  ENV: currentEnv as EnvironmentType,
-} as ProjectEnvironment
+export const env = (
+  environment.ENV ||
+  environment.NODE_ENV ||
+  environment.DENO_ENV ||
+  environment.BUN_ENV ||
+  environment.VITE_ENV ||
+  "development"
+).toLowerCase() as EnvironmentType
+
+const envPaths = [
+  ".env.local",
+  ".env." + env,
+  ".env." + env + ".local",
+]
+
+for (const path of envPaths) {
+  configDotenv({
+    ...options,
+    path,
+    override: true,
+    processEnv: environment,
+  })
+}
+
+//@ts-ignore ts(7006)
+Object.assign(environment, process.env)
 
 export default environment

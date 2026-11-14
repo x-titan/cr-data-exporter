@@ -1,14 +1,20 @@
-export type EnvironmentType = "development" | "production" | "test"
+export type EnvironmentType =
+  | "development"
+  | "production"
+  | "test"
+  | (string & {})
 
-export interface Environment {
-  isDevelopment: boolean
-  isTest: boolean
-  isProduction: boolean
-  debug: boolean
-  ENV: EnvironmentType
+export interface IBaseConfig {
+  readonly isDevelopment: boolean
+  readonly isTest: boolean
+  readonly isProduction: boolean
+  readonly debug: boolean
+  readonly env: EnvironmentType
+  readonly RAW: Record<string, string | undefined>
 }
 
-export interface ProjectEnvironment extends Environment {
-  TOKEN: string
-  PLAYER_TAG: string
+export interface IConfig extends IBaseConfig {
+  apiToken?: string
+  playerTag?: string
+  normalizeCardLevels?: boolean
 }

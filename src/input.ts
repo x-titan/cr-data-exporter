@@ -14,6 +14,6 @@ export async function inputPlayerTag(attempts = 3): Promise<string> {
       continue
     }
 
-    return trimmed
+    return trimmed.startsWith("#") ? trimmed : "#" + trimmed
   }
 }
